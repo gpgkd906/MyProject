@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title></title>
+    <script type="text/javascript" src="../../editor_api.js">
+        var paths = [
+            'editor.js',
+            'core/browser.js',
+            'core/utils.js',
+            'core/EventBase.js',
+            'core/dom/dom.js',
+            'core/dom/dtd.js',
+            'core/dom/domUtils.js',
+            'core/dom/Range.js',
+            'core/dom/Selection.js',
+            'core/Editor.js',
+            //引入命令
+            'commands/basestyle.js',
+                
+            'plugins/undo/undo.js',
+            'plugins/keystrokes/keystrokes.js',
+            'plugins/shortcutkeys/shortcutkeys.js',
+            'plugins/enterkey/enterkey.js'
+        ];
+    </script>
+    <style type="text/css">
+        #editor {
+            border: 1px solid #CCC;
+        }
+        #editor_toolbar_box {
+            background: #F0F0EE;
+            padding: 2px;
+        }
+        #editor_iframe_holder {
+            border-top: 1px solid #CCC;
+            border-bottom: 1px solid #CCC;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor">
+        <div id="editor_toolbar_box">
+            <div id="editor_toolbar">
+                <input id="addBold" type="button" value="加粗" onclick="myeditor.execCommand('bold')"/>
+                <input type="button" value="获得编辑器内容" onclick="alert(myeditor.getContent())"/>
+            </div>
+        </div>
+        <div id="editor_iframe_holder"></div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        var opt = {
+            initialContent: '欢迎使用<a href="http://ueditor.baidu.com/">UEditor</a>!',
+            initialStyle :'.selectTdClass{background-color:#3399FF !important}',
+            minFrameHeight: 200
+        };
+        var myeditor = new baidu.editor.Editor(opt);
+        myeditor.render('editor_iframe_holder');
+		myeditor.addListener('selectionchange', function (){
+			var state = myeditor.queryCommandState("bold");
+			var btn = document.getElementById("addBold");
+			if(state == 1){
+				//当前选中的为加粗
+				btn.style.color = "blue";
+			}else{
+				//当前选中的不为加粗
+			    btn.style.color = "";
+			}
+		});
+    </script>
+</body>
+</html>

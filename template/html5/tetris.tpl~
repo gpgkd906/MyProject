@@ -1,0 +1,23 @@
+<{extends file="common/main.tpl"}>
+<{block:body.content}>
+<div id="table">
+       <{range 1 to 20}>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=1></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=2></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=3></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=4></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=5></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=6></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=7></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=8></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=9></div>
+	<div class="grid" style="width:30px;height:30px;padding:0px;margin:0px;float:left" x=<{$range}> y=10></div>
+	<div style="width:30px;height:30px;padding:0px;margin:0px" class="disable"></div>
+       <{/range}>
+</div>
+<{/block}>
+<{block:footer.resource}>
+<script src="<{$js}>tetris.js">
+<{/block}>
+<{block:javascript}>
+<{/block}>

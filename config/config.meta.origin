@@ -1,0 +1,70 @@
+<?php
+  /**
+   *
+   *
+   *   Licensed under the MIT license:
+   *   http://www.opensource.org/licenses/mit-license.php
+   *
+   *   author: chenhan,gpgkd906@gmail.com
+   *   website: http://dev.gpgkd906.com/MyProject/
+   */
+  
+  /**
+   * 框架基本路径
+   */
+  abstract class My_Origin {
+  const root='/var/www/My/';
+  const core='/var/www/My/script/classes/core/';
+  const classes='/var/www/My/script/classes/';
+  const interfaces='/var/www/My/script/classes/interface/';
+  const app='/var/www/My/script/app/';
+  const www='/var/www/My/public_html/';
+  const data='/var/www/My/data/';
+  const template='/var/www/My/template/';
+  const template_c='/var/www/My/template_c/';
+  const cacher='/var/www/My/public_html/cache/';
+  
+  /**
+   * 以下部分为系统安装时所需内容
+   */
+  const domain='http://localhost/My/public_html/';
+  const baseurl='/My/public_html/';
+  
+  /**
+   * 数据库参数
+   */
+  const DB_STATUS='valid';
+  const DB_DNS='';
+  const DB_USER='';
+  const DB_PASS='';
+  
+  /**
+   * 缓存用参数
+   */
+  const cache="cache";
+  const cache_file="localhost";
+  
+  /**
+   * 开发用debug设定(error_reporting参数)
+   */
+  const debug_level=32767;
+  /**
+   *Dispatcher
+   */
+  const Dispatcher="myDispatcher";
+  const actionTag='req';
+  /**
+   * 系统安装时的一些默认参数
+   */
+  public static $config=array(
+			       "debug"=>true,
+			       );
+
+  /**
+   * url route
+   */
+  public static $app2url=array(
+				"/"=>"index"
+				);
+
+}

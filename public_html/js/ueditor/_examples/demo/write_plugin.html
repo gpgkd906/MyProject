@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title></title>
+    <script type="text/javascript" charset="utf-8" src="../../editor_config.js"></script>
+    <script type="text/javascript" src="../../editor_api.js">
+        var paths = [
+            'editor.js',
+            'core/browser.js',
+            'core/utils.js',
+            'core/EventBase.js',
+            'core/dom/dom.js',
+            'core/dom/dtd.js',
+            'core/dom/domUtils.js',
+            'core/dom/Range.js',
+            'core/dom/Selection.js',
+            'core/Editor.js',
+
+            'commands/basestyle.js',
+            'commands/font.js',
+            'commands/inserthtml.js',
+            'commands/removeformat.js',
+            'commands/elementpath.js',
+
+            'plugins/serialize/serialize.js',
+            'plugins/source/source.js',
+
+            'ui/ui.js',
+            'ui/uiutils.js',
+            'ui/uibase.js',
+            'ui/separator.js',
+            'ui/mask.js',
+            'ui/stateful.js',
+            'ui/button.js',
+            'ui/popup.js',
+            'ui/toolbar.js',
+            'ui/dialog.js',
+            'ui/editorui.js',
+            'ui/editor.js'
+        ];
+    </script>
+    <style type="text/css">
+        #editor {
+            border: 1px solid #CCC;
+            width:300px;
+            float:left;
+            margin-left:20px;
+        }
+        #editor_toolbar_box {
+            background: #F0F0EE;
+            padding: 2px;
+        }
+        #editor_iframe_holder {
+            border-top: 1px solid #CCC;
+            border-bottom: 1px solid #CCC;
+        }
+        .left {
+            float:left;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="../../themes/default/ueditor.css"/>
+</head>
+<body>
+	<h3>解决chrome下无法选中图片的问题</h3>
+    <div class="left">
+        <input type="button" value="使用自己创建的插件" onclick="useMyPlugin()"/>
+    </div>
+    <div id="editor">
+        <div id="editor_toolbar_box">
+            <div id="editor_toolbar">
+                <input type="button" value="查看源码" onclick="editor.execCommand('source')"/>
+            </div>
+        </div>
+        <div id="editor_iframe_holder"></div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        var editor = new baidu.editor.ui.Editor({
+            id: 'editor',
+            initialContent: '请在chrome浏览器下测试<br><img src="http://www.baidu.com/img/baidu_sylogo1.gif"/><br/>点击按钮查看效果',
+            initialStyle :'.selectTdClass{background-color:#3399FF !important}',
+            minFrameHeight: 200,
+			ui : {
+			    toolbars : [['Source','Image']]
+			}
+        });
+        editor.render('editor_iframe_holder');
+        var useMyPlugin = function(){
+            var me = editor,
+                browser = baidu.editor.browser;
+            if ( browser.webkit ) {
+                me.addListener( 'click', function( type, e ) {
+                    if ( e.target.tagName == 'IMG' ) {
+                        var range = new baidu.editor.dom.Range( me.document );
+                        range.selectNode( e.target ).select();
+
+                    }
+                } )
+            }
+        };
+    </script>
+</body>
+</html>

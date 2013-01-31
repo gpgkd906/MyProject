@@ -1,0 +1,165 @@
+<?php
+/**
+ *   My框架核心控制器
+ *   负责所有其他类的实例化，方法，属性的调用，以及应用中所使用到的全局上下文。
+ *   除本库的实例以外，所有变量，以及实例都不应当在全局环境下初始化或访问。
+ *
+ *   Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ *   author: chenhan,gpgkd906@gmail.com
+ *   website: http://dev.gpgkd906.com/MyProject/
+ */
+
+abstract class core {
+  protected static $_obj=array();
+  public $request;
+  private $autoRender=true;
+  private $dispatcher=null;
+  protected static $instance;
+
+  protected function __construct(){
+    $this->import("errorHandler");
+    if( !isset($_SESSION) ){
+      session_start();
+    }
+    if(defined("My::debug_level")){
+      errorHandler::setHandlerLevel(My::debug_level);
+    }
+    errorHandler::setDefaultHandler();
+    if(is_callable("My::debug_filter")){
+      errorHandler::setHandlerFilter("My::debug_filter");
+    }
+    //gzip
+    ob_start("ob_gzhandler");
+    //timeZone
+    $timeZone=defined("My::timeZone")?My::timeZone:"Asia/Beijing";
+    date_default_timezone_set($timeZone);
+  }
+  
+  public function hasInstance($class){
+    return isset( self::$_obj[$class] );
+  }
+
+  public function getInstance($class,$params=array()){
+    if( isset( self::$_obj[$class] ) ){
+      return self::$_obj[$class];
+    }
+    if(!$this->import($class)){
+      throw new Exception("controller::import failed...");
+    }
+    switch(count($params))
+      {
+      case 4:
+	return self::$_obj[$class]=new $class($params[0],$params[1],$params[2],$params[3]);
+      case 3:
+	return self::$_obj[$class]=new $class($params[0],$params[1],$params[2]);
+      case 2:
+	return self::$_obj[$class]=new $class($params[0],$params[1]);
+      case 1:
+	return self::$_obj[$class]=new $class($params[0]);
+      default:
+	return self::$_obj[$class]=new $class();
+      }
+  }
+
+  public function import($class){
+    //检查重复import
+    if(!class_exists($class)){
+      $paths=array(My::classes."core/");
+      if(isset(self::$_obj["module"])){
+	$paths=array_merge($paths,$this->module->include_path());
+      }
+      $imported=false;
+      foreach($paths as $path){
+	if( is_file( $path."{$class}.class.php" ) ){
+	  require_once $path."{$class}.class.php";
+	  $imported=true;
+	  break;
+	}
+      }
+      if($imported===false){
+	throw new Exception("controller::import class:{$class} failed...");
+      }
+    }
+    return true;
+  }
+
+  public function load($file){
+    require_once $file;
+  }
+
+  public function reload($file){
+    require $file;
+  }
+
+  public function __set($name,$obj){
+    if(is_object($obj)){
+      self::$_obj[$name]=$obj;
+    }
+    return $obj;
+  }
+
+  public function __get($name){
+    if(isset(self::$_obj[$name])){
+      return self::$_obj[$name];
+    }
+  }
+
+  public function process(){
+    $this->view->setTemplate($this->request["view"]);
+    $app=$this->action();
+    $this->render($app);
+  }
+
+  private function action(){
+    require My::classes."application.class.php";
+    if(isset($this->request["logic"][0]))
+      {
+	require $this->request["logic"];
+	if(!class_exists($this->request["appController"])){
+	  $exception="要求するアプリ { ".$this->request["appController"]." } はファイル { ".$this->request["logic"]." } に存在しません，確認してください";
+	  throw new Exception($exception);
+	}
+	$obj=new $this->request["appController"]();
+	call_user_func(array($obj,"beforeAction"));
+	
+	if(!is_callable(array($this->request["appController"]/*$obj*/,$this->request["appRequest"]))){
+	  trigger_error("要求するページ { ".$this->request["appRequest"]." } はアプリ { ".$this->request["appController"]." } に存在しません，確認してください",E_USER_NOTICE);
+	}else{
+	  call_user_func(array($obj,$this->request["appRequest"]));
+	}
+	call_user_func(array($obj,"afterAction"));
+	return $obj;
+      }
+  }
+  
+  public function render($app){
+    if($this->autoRender){
+      isset($app) && call_user_func(array($app,"beforeRender"));
+      $this->view->display();
+      isset($app) && call_user_func(array($app,"afterRender"));      
+    }
+  }
+
+  public function disableRender(){
+    $this->autoRender=false;
+  }
+
+  public function enableRender(){
+    $this->autoRender=true;
+  }
+
+  public function application($map){
+    if(empty($this->dispatcher)){
+      //booter知道我们在初期导入了哪些模块，所以找booter是没错的。
+      $this->dispatcher=$this->getInstance("booter")->getDispatcher();
+    }
+    $req=$_REQUEST[My::actionTag];
+    $this->request=call_user_func_array(array($this->dispatcher,"map"),array($map,$req,My::app,My::template));
+    if(empty($this->request["logic"]) && empty($this->request["view"])){
+      return false;
+    }
+    return true;
+  }
+}

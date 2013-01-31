@@ -1,0 +1,24 @@
+My Framework Project
+
+这是一个以轻量级开发为目标的php框架，基于MIT授权发布。
+
+本框架主要目标：
+轻量化与人性化
+
+本框架主要结构：
+1，控制器
+1.1 核心控制器
+    core.class.php位于/script/classes/core/路径下，由上级文件夹的controller.class.php所继承并构成核心控制器，主要负责整个框架的主要流程，包括呼出各种模块，检查用户请求并请求分发器对请求进行分发，最后呼出逻辑控制器以及模板引擎完成整个处理过程。
+1.2 应用控制器
+    appController.class.php位于/script/classes/core/
+    application.class.php位于/script/classes/,继承自appController.class.php
+    由各大页面的应用继承application之后进行应用逻辑的实装。
+1.2.1 ajax控制器
+    ajaxController.class.php位于/script/classes/，继承自appController.class.php
+    主要用于ajax的处理与应答
+
+2，模型
+本框架以MyDO为模型蓝本，基本界面由from(Storage),find(Condition),set(Value)组成。
+目前只实装了MyDO_Sql这一个实现，将来会面向主要NOSQL数据库进行封装。
+1.1 MyDO_Sql
+    MyDO_sql.class.php位于/script/classes/core/路径下，内部的数据处理基于PDO引擎，并且假设Mysql为数据源。

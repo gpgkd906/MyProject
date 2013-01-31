@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>table</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript" src="../internal.js"></script>
+</head>
+<body>
+    <div style="float:left;">
+        表格宽度<input type="text" id="width" onchange="editor.execCommand( 'settablestyle',getOpt );" /> <br/>
+        边框宽度:<input id="border" type="text" size="2" onchange="editor.execCommand( 'settablestyle',getOpt );" />px <br/>边框自定义:<input type="text" id="self" /><br/>
+        表格背景:<input id="background" type="text" onchange="editor.execCommand( 'settablestyle',getOpt );" /><br/>
+        单元格边框:<select name="border_collapse" id="border_collapse" onchange="editor.execCommand( 'settablestyle',getOpt );">
+                    <option value="collapse">合并</option>
+                    <option value="separate">分离</option>
+                  </select><br/>
+        单元格间距:<input id="border_spacing" type="text" onchange="editor.execCommand( 'settablestyle',getOpt )"/>px
+
+        <!--<button id="setTableProperty" onclick="editor.execCommand( 'settablestyle',defaultOpt );showTableProperty(false);">全部还原</button><br/>-->
+        <button id="addCaption" onclick="editor.execCommand( 'addcaption' );">addCaption</button><br/>
+
+        <table cellspacing="1">
+            <td></td>
+        </table>
+
+    </div>
+
+    <script type="text/javascript">
+        function g(id){
+            return document.getElementById(id);
+        }
+        //获得table
+        var tmp = parent.editor.selection.getRange(),
+            currentTable = parent.baidu.editor.dom.domUtils.findParentByTagName(tmp.endContainer, 'table', true);
+//            dwidth = currentTable.offsetWidth,
+//            dbgcolor = currentTable.bgColor,
+//            dborder_collapse = currentTable.style.borderCollapse,
+//            dborder_spacing  = currentTable.cellSpacing,
+//            dborder = dwidth-currentTable.clientWidth,
+//            defaultOpt = {
+//                "border":dborder || 1,
+//                "background":dbgcolor || "white",
+//                "border-collapse":dborder_collapse || "collapse",
+//                "border-spacing":dborder_spacing || "0",
+//                "width":dwidth
+//            };
+
+        function showTableProperty( table ){
+            var width = table.offsetWidth,
+                bgcolor = table.bgColor,
+                border_collapse = table.style.borderCollapse,
+                border_spacing  = table.cellSpacing ;
+
+            g('border').value = (width-table.clientWidth);
+            g('background').value = bgcolor;
+            g('width').value = width;
+            var select = g('border_collapse');
+            for(var i=0;i<select.options.length;i++){
+                 if(select.options[i].value == border_collapse){
+                     select.options[i].selected = true;
+                     break;
+                 }
+             }
+            g('border_spacing').value = border_spacing;
+        }
+        showTableProperty(currentTable);
+
+        function getOpt(){
+            var border = (g('border').value || 1) + "px solid #000",
+                background = g('background').value || "white",
+                select = g("border_collapse"),
+                collapse=select.options[select.selectedIndex].value,
+                cellspacing = (g('border_spacing').value ||1) + "px",
+                width = g('width').value;
+            return {
+                "border":border,
+                "background":background,
+                "border-collapse":collapse,
+                "border-spacing":cellspacing,
+                "width":width
+            };
+        }
+
+
+    </script>
+
+</body>
+</html>

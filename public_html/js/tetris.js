@@ -1,0 +1,162 @@
+/**
+ * 俄罗斯方块
+ *
+ */
+var tetris=tetris || {};
+
+tetris.gridFactory=function(domGrid){
+    var grid={};
+    domGrid.each(function(){
+	var x=$(this).attr("x");
+	var y=$(this).attr("y");
+	if(!grid[x]){
+	    grid[x]={};
+	}
+	if(!grid[x][y]){
+	    grid[x][y]=0;
+	}
+    });  
+    return {
+	grid:grid,
+	fill:function(x,y){
+	    grid[x][y]=1;
+	},
+	isfill:function(x,y){
+	    return grid[x][y]===1;
+	},
+	clear:function(x,y){
+	    return grid[x][y]=0;
+	},
+	clearRow:function(x){
+	    for(i in grid[x]){
+		grid[x][i]=0;
+	    }
+	},
+	rowNumber:function(){
+	    return grid.length;
+	},
+	colNumber:function(){
+	    grid[0].length;
+	}
+    }
+};
+
+tetris.square=function(){
+    var sx=Math.floor(this.grid.colNumber/2)-1;
+    var choice={
+	0:{
+	    grid:[sx,sx+1,sx+10,sx+11], //方块
+	    roratable:false,
+	},
+	1:{
+	    grid:[sx,sx+1,sx+2,sx+11],
+	    roratable:true,
+	},
+	2:{
+	    grid:[sx,sx+1,sx+2,sx+10],
+	    roratable:true,
+	},
+	3:{
+	    grid:[sx,sx+1,sx+2,sx+12],
+	    roratable:true,
+	},
+	4:{
+	    grid:[sx,sx+1,sx+2,sx+3],
+	    roratable:true,
+	},
+	
+    };    
+    var generator=function(){
+	duration=1000;
+	var stop=0;
+	//
+	var peer=Math.floor(Math.random()*10/2);
+	var box=choice[peer];
+	var peer2=Math.floor(Math.random()*10/3);
+	//
+	return {
+	    id:null,
+	    down:function(){
+		
+	    },
+	    left:function(){
+
+	    },
+	    right:function(){
+		
+	    },
+	    rorateLeft:function(){
+
+	    },
+	    rorateRight:function(){
+
+	    },
+	    stop:function(call){
+		call();
+	    },
+	    isStop:function(){
+		clearInterval(this.id);
+		return stop===1;
+	    },
+	    move:function(){
+		while(peer2 --> 0 ){
+		    this.rorateLeft();
+		}
+		this.id=setInterval(this.down,duration);
+	    }
+	}
+    };
+    return {
+	get:function(){
+	    square=generator();
+	    $(document).keydown(function(e){
+		switch(e.keyCode){
+		case 37:
+		    square.left();
+		    break;
+		case 39:
+		    square.right();
+		    break;
+		case 40:
+		    square.down();
+		    break;
+		default:
+		    break;
+		}
+	    });
+	}
+    }
+}();
+
+tetris.game=function(){
+    var dead=false;
+    return {
+	square:null,
+	setup:function(square){
+	    this.square=square;
+	},
+	isDead:function(){
+	    return dead;
+	},
+	check:function(){
+	    if(!this.isDead()){
+		this.setup(tetris.square.get());
+		this.run();
+	    }
+	},
+	run:function(){
+	    if(!this.square.isStop()){
+		this.square.move();
+		this.square.stop(this.check);
+	    }
+	}
+    }
+}();
+
+$(function(){
+    var box=$("#table .grid"),square;
+    tetris.grid=tetris.gridFactory(box);
+    tetris.game.setup(tetris.square.get());
+    tetris.game.run();
+})
+
